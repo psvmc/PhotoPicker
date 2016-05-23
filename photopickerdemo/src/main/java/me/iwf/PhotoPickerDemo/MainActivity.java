@@ -1,5 +1,6 @@
 package me.iwf.PhotoPickerDemo;
 
+import android.Manifest;
 import android.content.Intent;
 import android.content.pm.PackageManager;
 import android.os.Bundle;
@@ -115,8 +116,6 @@ public class MainActivity extends AppCompatActivity {
     // If request is cancelled, the result arrays are empty.
     if (grantResults.length > 0
             && grantResults[0] == PackageManager.PERMISSION_GRANTED) {
-
-      // permission was granted, yay!
       onClick(RequestCode.values()[requestCode].mViewId);
 
     } else {
@@ -126,41 +125,22 @@ public class MainActivity extends AppCompatActivity {
     }
   }
 
-  @Override
-  public boolean shouldShowRequestPermissionRationale(@NonNull String permission) {
-    switch (permission) {
-      case Manifest.permission.READ_EXTERNAL_STORAGE:
-        // No need to explain to user as it is obvious
-        return false;
-
-      default:
-        return true;
-    }
-  }
 
   private void checkPermission(@NonNull RequestCode requestCode) {
 
-    int permissionState = ContextCompat.checkSelfPermission(this, Manifest.permission.READ_EXTERNAL_STORAGE);
-
-    if (permissionState != PackageManager.PERMISSION_GRANTED) {
-
-      // Should we show an explanation?
-      if (ActivityCompat.shouldShowRequestPermissionRationale(this,
-              Manifest.permission.READ_EXTERNAL_STORAGE)) {
-
-        // Show an expanation to the user *asynchronously* -- don't block
-        // this thread waiting for the user's response! After the user
-        // sees the explanation, try again to request the permission.
-
-      } else {
-
+    if(ContextCompat.checkSelfPermission(this, Manifest.permission.READ_EXTERNAL_STORAGE) != 0){
+      if (!ActivityCompat.shouldShowRequestPermissionRationale(this,Manifest.permission.READ_EXTERNAL_STORAGE)) {
         ActivityCompat.requestPermissions(this,
                 new String[]{Manifest.permission.READ_EXTERNAL_STORAGE},
                 requestCode.ordinal());
-
       }
-    } else {
-      // Permission granted
+    }else if(ContextCompat.checkSelfPermission(this, Manifest.permission.CAMERA) != 0){
+      if (!ActivityCompat.shouldShowRequestPermissionRationale(this,Manifest.permission.CAMERA)) {
+        ActivityCompat.requestPermissions(this,
+                new String[]{Manifest.permission.CAMERA},
+                requestCode.ordinal());
+      }
+    }else{
       onClick(requestCode.mViewId);
     }
   }
